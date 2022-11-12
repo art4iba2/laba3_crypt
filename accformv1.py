@@ -35,7 +35,7 @@ class Ui_AccForn(object):
     def retranslateUi(self, AccForn):
         _translate = QtCore.QCoreApplication.translate
         AccForn.setWindowTitle(_translate("AccForn", "Form"))
-        self.lineEdit.setPlaceholderText(_translate("AccForn", "Iput..."))
+        self.lineEdit.setPlaceholderText(_translate("AccForn", "Input..."))
         self.pushButton.setText(_translate("AccForn", "Exit"))
         self.pushButton_2.setText(_translate("AccForn", "Отправить"))
         self.pushButton_3.setText(_translate("AccForn", "Вывести"))

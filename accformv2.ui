@@ -26,7 +26,7 @@
     <string>Input...</string>
    </property>
    <property name="text">
-    <string>Input...</string>
+    <string>Iput...</string>
    </property>
    <property name="maxLength">
     <number>8</number>

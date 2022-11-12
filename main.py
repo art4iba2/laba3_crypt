@@ -1,9 +1,10 @@
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from accformv1 import Ui_AccForn
 from des import Ui_Login
 from exitform import Ui_Exit_form
-
+from md5 import *
+from textwrap import wrap
 
 #####################################################################
 def Exit_acc():
@@ -29,8 +30,39 @@ def openAccForn():
     AccForn = QtWidgets.QDialog()
     ui = Ui_AccForn()
     ui.setupUi(AccForn)
-    mywin.hide()
+    formF.hide()
     AccForn.show()
+
+    # Функция вывода зашифрованного текста в файл
+    def record():
+        text = ui.lineEdit.text()
+        text = text.replace(" ", "_")
+        text = wrap(text, 10)
+        for i in range(len(text)):
+            text[i] = MD5(bytes(text[i],encoding='utf-8'))
+        text = "".join(text)
+        with open('user_DB.txt', 'r+', -1, 'utf-8') as file:
+            file.write(text)
+            ui.lineEdit_2.setText("")
+        file.close()
+
+    # Функция вывода текста в форму
+    def translate():
+        with open('user_DB.txt', 'r+', -1, 'utf-8') as file:
+            text = file.readlines()[0]
+            text = wrap(text, 10)
+            for i in range(len(text)):
+                text[i] = MD5(bytes(text[i],encoding='utf-8'))
+            text = "".join(text)
+            text = text.replace("_", " ")
+            ui.lineEdit_2.setText(text)
+            file.truncate()
+        file.close()
+
+
+    ui.pushButton_2.clicked.connect(record)
+
+    ui.pushButton_3.clicked.connect(translate)
 
     ui.pushButton.clicked.connect(Exit_acc)
 #####################################################################################################
@@ -43,7 +75,7 @@ def login(username, password, signal):
         for line in file:
             line = line.split('<-[Username]:[Password]->')
             line[1] = line[1][:len(line[1])-1]
-            if line[0] == username and line[1] == password:
+            if line[0] == MD5(bytes(username, encoding='utf-8')) and line[1] == MD5(bytes(password, encoding='utf-8')):
                 flag = True
                 user_data = r"data_D.txt"
                 user_data = user_data.replace('D', username)
@@ -60,16 +92,16 @@ def register(username, password, signal):
         for line in file:
             line = line.split('<-[Username]:[Password]->')
             line[1] = line[1][:len(line[1]) - 1]
-            if line[0] == username:
+            if line[0] == MD5(bytes(username, encoding='utf-8')):
                 flag2 = True
                 signal.emit('Такой ник уже используется!')
         if username == '' or password == '':
             flag2 = True
             signal.emit('Не оставляйте поля пустыми!')
         if not flag2:
-            file.write(username)
+            file.write(MD5(bytes(username, encoding='utf-8')))
             file.write('<-[Username]:[Password]->')
-            file.write(password)
+            file.write(MD5(bytes(password, encoding='utf-8')))
             file.write('\n')
             signal.emit('Вы успешно зарегистрированы!')
     file.close()
@@ -118,6 +150,6 @@ class Interface(QtWidgets.QWidget):
 
 
 app = QtWidgets.QApplication(sys.argv)
-mywin = Interface()
-mywin.show()
+formF = Interface()
+formF.show()
 app.exec_()
